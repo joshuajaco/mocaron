@@ -1,5 +1,7 @@
 import type http from "http";
 import express from "express";
+import deepEqual from "deep-equal";
+import bodyParser from "body-parser";
 
 export type MatcherObj = {
   method?: string;
@@ -41,6 +43,8 @@ export class MockServer {
   private app = express();
 
   constructor(private options: Options) {
+    this.app.use(bodyParser.raw({ type: "*/*" }));
+
     this.app.all("*", (req, res) => {
       const matches = this._mocks.filter(({ matcher }) =>
         matchRequest(matcher, req)
@@ -187,7 +191,8 @@ function matchRequest(matcher: Matcher, req: express.Request): boolean {
   return (
     matchMethod(matcher, req) &&
     matchPath(matcher, req) &&
-    matchHeaders(matcher, req)
+    matchHeaders(matcher, req) &&
+    matchBody(matcher, req)
   );
 }
 
@@ -203,3 +208,19 @@ const matchPath = (matcher: MatcherObj, req: express.Request): boolean =>
 const matchHeaders = (matcher: MatcherObj, req: express.Request): boolean =>
   !matcher.headers ||
   Object.entries(matcher.headers).every(([k, v]) => req.headers[k] === v);
+
+const matchBody = (matcher: MatcherObj, req: express.Request): boolean => {
+  if (!matcher.body) return true;
+
+  if (typeof matcher.body === "string") {
+    return matcher.body === req.body.toString();
+  }
+
+  try {
+    return deepEqual(matcher.body, JSON.parse(req.body.toString()), {
+      strict: true,
+    });
+  } catch {
+    return false;
+  }
+};
