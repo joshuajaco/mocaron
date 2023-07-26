@@ -1,10 +1,16 @@
 {
+  "include": ["**/*.ts"],
+  "exclude": ["dist"],
   "compilerOptions": {
-    "incremental": true,
-    "noEmit": true,
+    "target": "ESNext",
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
     "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true
+    "incremental": true
   }
 }

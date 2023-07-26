@@ -47,7 +47,7 @@ export class MockServer {
 
     this.app.all("*", (req, res) => {
       const matches = this._mocks.filter(({ matcher }) =>
-        matchRequest(matcher, req)
+        matchRequest(matcher, req),
       );
 
       if (matches.length === 0) {
@@ -83,7 +83,7 @@ export class MockServer {
         res.send(
           typeof response.body === "string"
             ? response.body
-            : JSON.stringify(response.body)
+            : JSON.stringify(response.body),
         );
       }
 
@@ -109,7 +109,7 @@ export class MockServer {
         server.close((err) => {
           if (err) reject(err);
           else resolve();
-        })
+        }),
       );
     }
 
@@ -123,7 +123,7 @@ export class MockServer {
   public mock(
     matcher: Matcher,
     response: string | number | Response,
-    options: MockOptions = {}
+    options: MockOptions = {},
   ) {
     this._mocks.push({
       matcher,
@@ -173,14 +173,14 @@ export class MockServer {
     return (
       matcher: string | RegExp | Exclude<MatcherObj, "method">,
       response: string | number | Response,
-      options: MockOptions = {}
+      options: MockOptions = {},
     ) =>
       this.mock(
         typeof matcher === "string" || matcher instanceof RegExp
           ? { path: matcher, method }
           : { ...matcher, method },
         response,
-        options
+        options,
       );
   }
 }
