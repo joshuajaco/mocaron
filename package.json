@@ -3,15 +3,11 @@
   "version": "0.0.2",
   "repository": "joshuajaco/mocaron",
   "license": "MIT",
-  "exports": {
-    "default": "./dist/index.js",
-    "types": "./dist/index.d.ts"
-  },
+  "exports": "./dist/index.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/*.js",
-    "dist/*.d.ts"
+    "dist"
   ],
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",

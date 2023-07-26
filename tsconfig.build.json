@@ -4,6 +4,8 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
-    "declaration": true
+    "declaration": true,
+    "incremental": false,
+    "sourceMap": true
   }
 }
