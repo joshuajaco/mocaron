@@ -5,9 +5,10 @@ import bodyParser from "body-parser";
 
 export type MatcherObj = {
   method?: string;
-  body?: string | object;
   path?: string | RegExp;
+  query?: express.Request["query"];
   headers?: Record<string, string>;
+  body?: string | object;
 };
 
 export type MatcherFn = (req: express.Request) => boolean;
@@ -184,6 +185,7 @@ function matchRequest(matcher: Matcher, req: express.Request): boolean {
   return (
     matchMethod(matcher, req) &&
     matchPath(matcher, req) &&
+    matchQuery(matcher, req) &&
     matchHeaders(matcher, req) &&
     matchBody(matcher, req)
   );
@@ -197,6 +199,16 @@ const matchPath = (matcher: MatcherObj, req: express.Request): boolean =>
   (matcher.path instanceof RegExp
     ? !!req.path.match(matcher.path)
     : req.path === matcher.path);
+
+const matchQuery = (matcher: MatcherObj, req: express.Request): boolean => {
+  if (!matcher.query) return true;
+
+  try {
+    return deepEqual(matcher.query, req.query, { strict: true });
+  } catch {
+    return false;
+  }
+};
 
 const matchHeaders = (matcher: MatcherObj, req: express.Request): boolean =>
   !matcher.headers ||
