@@ -1,4 +1,4 @@
-import type http from "http";
+import type http from "node:http";
 import express from "express";
 import deepEqual from "deep-equal";
 import bodyParser from "body-parser";
