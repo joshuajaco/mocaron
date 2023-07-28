@@ -40,9 +40,9 @@ export class MockServer {
   #mocks: Mock[] = [];
   #calls: Call[] = [];
   #server: http.Server | null = null;
-  #app = express();
+  readonly #app = express();
 
-  constructor(private options: Options) {
+  constructor(private readonly options: Options) {
     this.#app.use(bodyParser.raw({ type: "*/*" }));
 
     this.#app.all("*", (req, res) => {
