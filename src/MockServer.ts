@@ -83,7 +83,7 @@ export class MockServer {
 
   public start(): Promise<void> {
     if (this.#server) {
-      console.error("Server is already running");
+      console.warn("Server is already running");
       return Promise.resolve();
     }
 
@@ -95,7 +95,7 @@ export class MockServer {
   public stop(): Promise<void> {
     const server = this.#server;
     if (server) return new Promise((resolve) => server.close(() => resolve()));
-    console.error("No server is running");
+    console.warn("No server is running");
     return Promise.resolve();
   }
 
@@ -154,7 +154,7 @@ export class MockServer {
 
   #createMockFn(method: string) {
     return (
-      matcher: string | RegExp | Exclude<MatcherObj, "method">,
+      matcher: string | RegExp | Omit<MatcherObj, "method">,
       response: string | number | Response,
       options: MockOptions = {},
     ) =>

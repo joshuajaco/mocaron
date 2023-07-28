@@ -2,3 +2,4 @@ node_modules
 dist
 .idea
 tsconfig.tsbuildinfo
+.nyc_output
