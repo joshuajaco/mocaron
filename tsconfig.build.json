@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["index.ts"],
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",

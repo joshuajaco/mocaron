@@ -1,19 +1,8 @@
 import type http from "node:http";
 import express from "express";
-import deepEqual from "deep-equal";
 import bodyParser from "body-parser";
-
-export type MatcherObj = {
-  method?: string;
-  path?: string | RegExp;
-  query?: express.Request["query"];
-  headers?: Record<string, string>;
-  body?: string | object;
-};
-
-export type MatcherFn = (req: express.Request) => boolean;
-
-export type Matcher = MatcherObj | MatcherFn;
+import { matchRequest } from "./matchRequest";
+import type { Matcher, MatcherObj } from "./matchRequest";
 
 export type ResponseObj = {
   status?: number;
@@ -178,54 +167,3 @@ export class MockServer {
       );
   }
 }
-
-function matchRequest(matcher: Matcher, req: express.Request): boolean {
-  if (typeof matcher === "function") return matcher(req);
-
-  return (
-    matchMethod(matcher, req) &&
-    matchPath(matcher, req) &&
-    matchQuery(matcher, req) &&
-    matchHeaders(matcher, req) &&
-    matchBody(matcher, req)
-  );
-}
-
-const matchMethod = (matcher: MatcherObj, req: express.Request): boolean =>
-  !matcher.method || matcher.method.toLowerCase() === req.method.toLowerCase();
-
-const matchPath = (matcher: MatcherObj, req: express.Request): boolean =>
-  !matcher.path ||
-  (matcher.path instanceof RegExp
-    ? !!req.path.match(matcher.path)
-    : req.path === matcher.path);
-
-const matchQuery = (matcher: MatcherObj, req: express.Request): boolean => {
-  if (!matcher.query) return true;
-
-  try {
-    return deepEqual(matcher.query, req.query, { strict: true });
-  } catch {
-    return false;
-  }
-};
-
-const matchHeaders = (matcher: MatcherObj, req: express.Request): boolean =>
-  !matcher.headers ||
-  Object.entries(matcher.headers).every(([k, v]) => req.headers[k] === v);
-
-const matchBody = (matcher: MatcherObj, req: express.Request): boolean => {
-  if (!matcher.body) return true;
-
-  if (typeof matcher.body === "string") {
-    return matcher.body === req.body.toString();
-  }
-
-  try {
-    return deepEqual(matcher.body, JSON.parse(req.body.toString()), {
-      strict: true,
-    });
-  } catch {
-    return false;
-  }
-};
