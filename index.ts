@@ -1,4 +1,4 @@
-import type http from "http";
+import type http from "node:http";
 import express from "express";
 import deepEqual from "deep-equal";
 import bodyParser from "body-parser";
@@ -37,16 +37,16 @@ export type Call = { request: express.Request; matcher: Matcher };
 export type Options = { port: number };
 
 export class MockServer {
-  private _mocks: Mock[] = [];
-  private _calls: Call[] = [];
-  private server: http.Server | null = null;
-  private app = express();
+  #mocks: Mock[] = [];
+  #calls: Call[] = [];
+  #server: http.Server | null = null;
+  readonly #app = express();
 
-  constructor(private options: Options) {
-    this.app.use(bodyParser.raw({ type: "*/*" }));
+  constructor(private readonly options: Options) {
+    this.#app.use(bodyParser.raw({ type: "*/*" }));
 
-    this.app.all("*", (req, res) => {
-      const matches = this._mocks.filter(({ matcher }) =>
+    this.#app.all("*", (req, res) => {
+      const matches = this.#mocks.filter(({ matcher }) =>
         matchRequest(matcher, req),
       );
 
@@ -57,7 +57,7 @@ export class MockServer {
 
       const match = matches.length === 1 ? matches[0] : matches.at(-1)!;
 
-      this._calls.push({
+      this.#calls.push({
         request: req,
         matcher: match.matcher,
       });
@@ -91,29 +91,22 @@ export class MockServer {
     });
   }
 
-  public async start(): Promise<void> {
-    if (this.server) {
+  public start(): Promise<void> {
+    if (this.#server) {
       console.error("Server is already running");
-      return;
+      return Promise.resolve();
     }
 
     return new Promise((resolve) => {
-      this.server = this.app.listen(this.options.port, resolve);
+      this.#server = this.#app.listen(this.options.port, resolve);
     });
   }
 
-  public async stop(): Promise<void> {
-    const { server } = this;
-    if (server) {
-      return new Promise((resolve, reject) =>
-        server.close((err) => {
-          if (err) reject(err);
-          else resolve();
-        }),
-      );
-    }
-
+  public stop(): Promise<void> {
+    const server = this.#server;
+    if (server) return new Promise((resolve) => server.close(() => resolve()));
     console.error("No server is running");
+    return Promise.resolve();
   }
 
   public port() {
@@ -125,7 +118,7 @@ export class MockServer {
     response: string | number | Response,
     options: MockOptions = {},
   ) {
-    this._mocks.push({
+    this.#mocks.push({
       matcher,
       response:
         typeof response === "string"
@@ -139,29 +132,29 @@ export class MockServer {
     return this;
   }
 
-  public get = this.createMockFn("GET");
-  public post = this.createMockFn("POST");
-  public patch = this.createMockFn("PATCH");
-  public delete = this.createMockFn("DELETE");
+  public get = this.#createMockFn("GET");
+  public post = this.#createMockFn("POST");
+  public patch = this.#createMockFn("PATCH");
+  public delete = this.#createMockFn("DELETE");
 
   public mocks(): readonly Mock[] {
-    return this._mocks.slice();
+    return this.#mocks.slice();
   }
 
   public calls(): readonly Call[] {
-    return this._calls.slice();
+    return this.#calls.slice();
   }
 
   public hasBeenCalledWith(matcher: Matcher) {
-    return this._calls.some(({ request }) => matchRequest(matcher, request));
+    return this.#calls.some(({ request }) => matchRequest(matcher, request));
   }
 
   public resetMocks() {
-    this._mocks = [];
+    this.#mocks = [];
   }
 
   public resetCalls() {
-    this._calls = [];
+    this.#calls = [];
   }
 
   public reset() {
@@ -169,7 +162,7 @@ export class MockServer {
     this.resetCalls();
   }
 
-  private createMockFn(method: string) {
+  #createMockFn(method: string) {
     return (
       matcher: string | RegExp | Exclude<MatcherObj, "method">,
       response: string | number | Response,
