@@ -248,7 +248,7 @@ test("custom assertion", async () => {
 
 ### `constructor(options): MockServer`
 
-Creates a new [`MockServer`](#mockserver) instance.
+Create a new [`MockServer`](#mockserver) instance.
 
 | Param   | Type                  | Default |
 | ------- | --------------------- | ------- |
@@ -264,7 +264,7 @@ const mockServer = new MockServer({ port: 3000 });
 
 ### `start(): Promise<void>`
 
-Starts the mock server.
+Start the mock server.
 
 #### Example
 
@@ -276,7 +276,7 @@ await mockServer.start();
 
 ### `stop(): Promise<void>`
 
-Stops the mock server.
+Stop the mock server.
 
 #### Example
 
@@ -663,7 +663,7 @@ Object with the following properties:
 
 ## `ResponseFn`
 
-Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns an [`ResponseObj`](#responseobj).
+Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns a [`ResponseObj`](#responseobj).
 
 ```ts
 type ResponseFn = (req: express.Request) => ResponseObj;
@@ -694,7 +694,7 @@ Object with the following properties:
 | Property | Type                                                          | Description                         |
 | -------- | ------------------------------------------------------------- | ----------------------------------- |
 | request  | [`express.Request`](https://expressjs.com/en/4x/api.html#req) | request the server was called with  |
-| matcher  | [`Matcher`](#matcher)                                         | matcher thr request matched against |
+| matcher  | [`Matcher`](#matcher)                                         | matcher the request matched against |
 
 # Changelog
 
