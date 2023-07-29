@@ -13,7 +13,7 @@
   </a>
   <br />
   <br />
-  Simple <a href="https://expressjs.com">express</a> mock server with an API inspired by <a href="https://www.wheresrhys.co.uk/fetch-mock">fetch-mock</a>.
+  Simple <a href="https://expressjs.com">express</a> mock server with an API inspired by <a href="https://www.wheresrhys.co.uk/fetch-mock">fetch-mock</a>
 </p>
 
 ---
@@ -419,7 +419,7 @@ object with the following properties:
 
 ## `MatcherFn`
 
-A function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns whether the request should be mocked.
+A function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns whether the request should match.
 
 ```ts
 type MatcherFn = (req: express.Request) => boolean;
@@ -463,20 +463,20 @@ object with the following properties:
 
 object with the following properties:
 
-| Property | Type                          | Description                                    |
-| -------- | ----------------------------- | ---------------------------------------------- |
-| matcher  | [`Matcher`](#matcher)         | matcher to match against the request           |
-| response | [`Response`](#response)       | what the server will respond with when matched |
-| options  | [`MockOptions`](#mockoptions) | see [`MockOptions`](#mockoptions)              |
+| Property | Type                          | Description                                        |
+| -------- | ----------------------------- | -------------------------------------------------- |
+| matcher  | [`Matcher`](#matcher)         | matcher to match against the request               |
+| response | [`Response`](#response)       | response the server will respond with when matched |
+| options  | [`MockOptions`](#mockoptions) | see [`MockOptions`](#mockoptions)                  |
 
 ## `Call`
 
 object with the following properties:
 
-| Property | Type                                                          | Description                        |
-| -------- | ------------------------------------------------------------- | ---------------------------------- |
-| request  | [`express.Request`](https://expressjs.com/en/4x/api.html#req) | request the server was called with |
-| matcher  | [`Matcher`](#matcher)                                         | matcher matching the request       |
+| Property | Type                                                          | Description                         |
+| -------- | ------------------------------------------------------------- | ----------------------------------- |
+| request  | [`express.Request`](https://expressjs.com/en/4x/api.html#req) | request the server was called with  |
+| matcher  | [`Matcher`](#matcher)                                         | matcher thr request matched against |
 
 # License
 
