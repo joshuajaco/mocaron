@@ -1,7 +1,7 @@
 import { after, afterEach, before, describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { getPort } from "get-port-please";
-import { MockServer } from "../src/MockServer";
+import { MockServer } from "../src";
 
 describe("MockServer", () => {
   let port: number;
