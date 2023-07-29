@@ -13,7 +13,7 @@
   </a>
   <br />
   <br />
-  Simple <a href="https://expressjs.com">express</a> mock server with an API inspired by <a href="https://www.wheresrhys.co.uk/fetch-mock">fetch-mock</a>
+  Simple <a href="https://expressjs.com">express</a> mock server with a flexible API inspired by <a href="https://www.wheresrhys.co.uk/fetch-mock">fetch-mock</a>
 </p>
 
 ---
