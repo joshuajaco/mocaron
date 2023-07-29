@@ -21,7 +21,6 @@
   ],
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
-    "coverage": "mkdir -p coverage && touch coverage/lcov.info && nyc report --reporter=text-lcov > coverage/lcov.info",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
     "lint": "eslint --ignore-path .gitignore --max-warnings 0 .",

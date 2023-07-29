@@ -20,7 +20,8 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test
-      - run: npm run coverage
+      - name: Generate coverage report
+        run: mkdir -p coverage && touch coverage/lcov.info && nyc report --reporter=text-lcov > coverage/lcov.info
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
