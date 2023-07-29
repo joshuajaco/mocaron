@@ -3,3 +3,4 @@ dist
 .idea
 tsconfig.tsbuildinfo
 .nyc_output
+coverage
