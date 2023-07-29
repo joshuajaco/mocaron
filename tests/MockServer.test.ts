@@ -284,7 +284,7 @@ describe("MockServer", () => {
   });
 
   describe("#hasBeenCalledWith", () => {
-    it("returns true", async () => {
+    it("returns true if mock server was called with given matcher", async () => {
       mockServer.get("/foo", 200).get("/bar", 200);
 
       assert(!mockServer.hasBeenCalledWith({ method: "GET", path: "/foo" }));
@@ -304,6 +304,28 @@ describe("MockServer", () => {
       assert(mockServer.hasBeenCalledWith({ method: "GET", path: "/bar" }));
 
       assert(!mockServer.hasBeenCalledWith({ method: "GET", path: "/baz" }));
+    });
+  });
+
+  describe("#hasBeenCalledTimes", () => {
+    it("returns true if mock server was called a certain number of times with given matcher", async () => {
+      mockServer.get("/foo", 200).get("/bar", 200);
+
+      assert(mockServer.hasBeenCalledTimes(0, { method: "GET", path: "/foo" }));
+      assert(mockServer.hasBeenCalledTimes(0, { method: "GET", path: "/bar" }));
+
+      await fetch(`${host}/foo`);
+
+      assert(mockServer.hasBeenCalledTimes(1, { method: "GET", path: "/foo" }));
+
+      await fetch(`${host}/foo`);
+
+      assert(mockServer.hasBeenCalledTimes(2, { method: "GET", path: "/foo" }));
+
+      await fetch(`${host}/bar`);
+
+      assert(mockServer.hasBeenCalledTimes(2, { method: "GET", path: "/foo" }));
+      assert(mockServer.hasBeenCalledTimes(1, { method: "GET", path: "/bar" }));
     });
   });
 });

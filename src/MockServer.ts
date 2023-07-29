@@ -139,6 +139,13 @@ export class MockServer {
     return this.#calls.some(({ request }) => matchRequest(matcher, request));
   }
 
+  public hasBeenCalledTimes(times: number, matcher: Matcher) {
+    return (
+      this.#calls.filter(({ request }) => matchRequest(matcher, request))
+        .length === times
+    );
+  }
+
   public resetMocks() {
     this.#mocks = [];
   }
