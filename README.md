@@ -455,9 +455,9 @@ type ResponseFn = (req: express.Request) => ResponseObj;
 
 object with the following properties:
 
-| Property  | Type                     | Description                                                                     |
-| --------- | ------------------------ | ------------------------------------------------------------------------------- |
-| overwrite | `boolean` \| `undefined` | when set to `true` previous mocks matching the same request will be overwritten |
+| Property  | Type                     | Description                                                                          |
+| --------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| overwrite | `boolean` \| `undefined` | when set to `true`,<br/>previous mocks matching the same request will be overwritten |
 
 ## `Mock`
 
