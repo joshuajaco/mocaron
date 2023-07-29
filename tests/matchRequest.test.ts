@@ -53,7 +53,9 @@ describe("matchRequest", () => {
   });
 
   it("matches with query", () => {
-    const matcher = { query: { foo: "bar", array: ["a", "b", "c"] } };
+    const matcher = {
+      query: { foo: "bar", array: ["a", "b", "c"], baz: undefined },
+    };
 
     const matches = [
       { query: { foo: "bar", array: ["a", "b", "c"] } },
@@ -62,6 +64,7 @@ describe("matchRequest", () => {
     ];
 
     const fails = [
+      { query: { foo: "bar", array: ["a", "b", "c"], baz: "1" } },
       { path: "/foo" },
       { query: { array: ["a", "b", "c"] } },
       { query: { foo: "bar" } },
@@ -74,16 +77,22 @@ describe("matchRequest", () => {
   });
 
   it("matches with headers", () => {
-    const matcher = { headers: { foo: "bar" } };
+    const matcher = {
+      headers: { "Content-Type": "application/json", bar: undefined },
+    };
 
     const matches = [
-      { headers: { foo: "bar" } },
-      { headers: { foo: "bar" }, path: "/foo" },
-      { headers: { foo: "bar" }, query: { foo: "bar" } },
+      { headers: { "Content-Type": "application/json" } },
+      { headers: { "content-type": "application/json" }, path: "/foo" },
+      {
+        headers: { "CONTENT-TYPE": "application/json", foo: "bar" },
+        query: { foo: "bar" },
+      },
     ];
 
     const fails = [
-      { headers: { foo: "baz" } },
+      { headers: { "Content-Type": "application/json", bar: "1" } },
+      { headers: { "Content-Type": "application/pdf" } },
       { headers: { foo: "baz" }, path: "/foo" },
       { path: "/foo" },
     ];

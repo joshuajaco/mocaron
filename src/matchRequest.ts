@@ -5,7 +5,7 @@ export type MatcherObj = {
   method?: string;
   path?: string | RegExp;
   query?: express.Request["query"];
-  headers?: Record<string, string>;
+  headers?: Record<string, string | undefined>;
   body?: string | object;
 };
 
@@ -42,13 +42,15 @@ function matchPath(matcher: MatcherObj, req: express.Request) {
 
 function matchQuery(matcher: MatcherObj, req: express.Request) {
   if (!matcher.query) return true;
-  return deepEqual(matcher.query, req.query, { strict: true });
+  return Object.entries(matcher.query).every(([k, v]) =>
+    deepEqual(req.query[k], v, { strict: true }),
+  );
 }
 
 function matchHeaders(matcher: MatcherObj, req: express.Request) {
-  return (
-    !matcher.headers ||
-    Object.entries(matcher.headers).every(([k, v]) => req.headers[k] === v)
+  if (!matcher.headers) return true;
+  return Object.entries(matcher.headers).every(
+    ([k, v]) => req.headers[k.toLowerCase()] === v,
   );
 }
 
