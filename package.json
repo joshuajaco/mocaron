@@ -8,7 +8,8 @@
     "mocks",
     "mock-server",
     "server",
-    "express"
+    "express",
+    "fetch-mock"
   ],
   "repository": "joshuajaco/mocaron",
   "license": "MIT",
