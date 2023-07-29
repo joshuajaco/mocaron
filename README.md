@@ -484,6 +484,10 @@ object with the following properties:
 | request  | [`express.Request`](https://expressjs.com/en/4x/api.html#req) | request the server was called with  |
 | matcher  | [`Matcher`](#matcher)                                         | matcher thr request matched against |
 
+# Changelog
+
+[CHANGELOG.md](https://github.com/joshuajaco/mocaron/blob/main/CHANGELOG.md)
+
 # License
 
 [MIT](https://github.com/joshuajaco/mocaron/blob/main/LICENSE)
