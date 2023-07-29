@@ -1,6 +1,15 @@
 {
   "name": "mocaron",
   "version": "0.0.2",
+  "description": "Simple express mock server with an API inspired by fetch-mock",
+  "keywords": [
+    "mock",
+    "mocking",
+    "mocks",
+    "mock-server",
+    "server",
+    "express"
+  ],
   "repository": "joshuajaco/mocaron",
   "license": "MIT",
   "exports": "./dist/index.js",
