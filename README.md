@@ -236,7 +236,7 @@ Returns the [`MockServer`](#mockserver) instance.
 #### Example
 
 ```ts
-mockServer.patch("/test", { status: 204 });
+mockServer.delete("/test", { status: 204 });
 
 const response = await fetch("http://localhost:3000/test", {
   method: "DELETE",
@@ -279,7 +279,8 @@ await fetch("http://localhost:3000/test");
 
 const calls = mockServer.calls();
 
-console.log(calls); // [{ path: "/test", method: "GET" }]
+console.log(calls);
+// [{ matcher: { path: "/test", request: <express.Request> } }]
 ```
 
 ---
@@ -299,11 +300,11 @@ Returns `true` if the route has been called with the given `matcher`, `false` ot
 ```ts
 mockServer.get("/test", { status: 200 });
 
-console.log(mockServer.hasBeenCalledWith("/test")); // false
+console.log(mockServer.hasBeenCalledWith({ path: "/test" })); // false
 
 await fetch("http://localhost:3000/test");
 
-console.log(mockServer.hasBeenCalledWith("/test")); // true
+console.log(mockServer.hasBeenCalledWith({ path: "/test" })); // true
 ```
 
 ---
@@ -322,13 +323,13 @@ Returns `true` if the route has been called `times` times with the given `matche
 ```ts
 mockServer.get("/test", { status: 200 });
 
-console.log(mockServer.hasBeenCalledTimes(0, "/test")); // true
-console.log(mockServer.hasBeenCalledTimes(1, "/test")); // false
+console.log(mockServer.hasBeenCalledTimes(0, { path: "/test" })); // true
+console.log(mockServer.hasBeenCalledTimes(1, { path: "/test" })); // false
 
 await fetch("http://localhost:3000/test");
 
-console.log(mockServer.hasBeenCalledTimes(0, "/test")); // false
-console.log(mockServer.hasBeenCalledTimes(1, "/test")); // true
+console.log(mockServer.hasBeenCalledTimes(0, { path: "/test" })); // false
+console.log(mockServer.hasBeenCalledTimes(1, { path: "/test" })); // true
 ```
 
 ---
@@ -343,8 +344,11 @@ Reset all mocks and calls.
 mockServer.get("/test", { status: 200 });
 await fetch("http://localhost:3000/test");
 
-console.log(mockServer.mocks()); // [{ matcher: "/test", response: { status: 200 } }]
-console.log(mockServer.calls()); // [{ path: "/test", method: "GET" }]
+console.log(mockServer.mocks());
+// [{ matcher: "/test", response: { status: 200 } }]
+
+console.log(mockServer.calls());
+// [{ path: "/test", method: "GET", request: <express.Request> }]
 
 mockServer.reset();
 
@@ -363,7 +367,8 @@ Reset all mocks.
 ```ts
 mockServer.get("/test", { status: 200 });
 
-console.log(mockServer.mocks()); // [{ matcher: "/test", response: { status: 200 } }]
+console.log(mockServer.mocks());
+// [{ matcher: { path: "/test", method: "GET" }, response: { status: 200 } }]
 
 mockServer.resetMocks();
 
@@ -382,7 +387,8 @@ Reset all calls.
 mockServer.get("/test", { status: 200 });
 await fetch("http://localhost:3000/test");
 
-console.log(mockServer.calls()); // [{ path: "/test", method: "GET" }]
+console.log(mockServer.calls());
+// [{ matcher: { path: "/test", method: "GET" }, request: <express.Request> }]
 
 mockServer.resetCalls();
 
