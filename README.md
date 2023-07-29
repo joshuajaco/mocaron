@@ -18,14 +18,14 @@
 
 ---
 
-# Table of Contents
-
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
 - [API](#api)
 - [Changelog](#changelog)
 - [License](#license)
+
+---
 
 # Installation
 
@@ -63,33 +63,33 @@ await mockServer.stop();
 
 # API
 
-- [`MockServer`](#-mockserver-)
-  - [`constructor(options): MockServer`](#-constructor-options---mockserver-)
-  - [`start(): Promise<void>`](#-start----promise-void--)
-  - [`stop(): Promise<void>`](#-stop----promise-void--)
-  - [`port(): number`](#-port----number-)
-  - [`mock(matcher, response, options): MockServer`](#-mock-matcher--response--options---mockserver-)
-  - [`get(matcher, response, options): MockServer`](#-get-matcher--response--options---mockserver-)
-  - [`post(matcher, response, options): MockServer`](#-post-matcher--response--options---mockserver-)
-  - [`patch(matcher, response, options): MockServer`](#-patch-matcher--response--options---mockserver-)
-  - [`delete(matcher, response, options): MockServer`](#-delete-matcher--response--options---mockserver-)
-  - [`mocks(): readonly Mock[]`](#-mocks----readonly-mock---)
-  - [`calls(): readonly Call[]`](#-calls----readonly-call---)
-  - [`hasBeenCalledWith(matcher): boolean`](#-hasbeencalledwith-matcher---boolean-)
-  - [`hasBeenCalledTimes(times, matcher): boolean`](#-hasbeencalledtimes-times--matcher---boolean-)
-  - [`reset(): void`](#-reset----void-)
-  - [`resetMocks(): void`](#-resetmocks----void-)
-  - [`resetCalls(): void`](#-resetcalls----void-)
-- [`Options`](#-options-)
-- [`Matcher`](#-matcher-)
-- [`MatcherObj`](#-matcherobj-)
-- [`MatcherFn`](#-matcherfn-)
-- [`Response`](#-response-)
-- [`ResponseObj`](#-responseobj-)
-- [`ResponseFn`](#-responsefn-)
-- [`MockOptions`](#-mockoptions-)
-- [`Mock`](#-mock-)
-- [`Call`](#-call-)
+- [`MockServer`](#mockserver)
+  - [`constructor(options): MockServer`](#constructoroptions-mockserver)
+  - [`start(): Promise<void>`](#start-promisevoid)
+  - [`stop(): Promise<void>`](#stop-promisevoid)
+  - [`port(): number`](#port-number)
+  - [`mock(matcher, response, options): MockServer`](#mockmatcher-response-options-mockserver)
+  - [`get(matcher, response, options): MockServer`](#getmatcher-response-options-mockserver)
+  - [`post(matcher, response, options): MockServer`](#postmatcher-response-options-mockserver)
+  - [`patch(matcher, response, options): MockServer`](#patchmatcher-response-options-mockserver)
+  - [`delete(matcher, response, options): MockServer`](#deletematcher-response-options-mockserver)
+  - [`mocks(): readonly Mock[]`](#mocks-readonly-mock)
+  - [`calls(): readonly Call[]`](#calls-readonly-call)
+  - [`hasBeenCalledWith(matcher): boolean`](#hasbeencalledwithmatcher-boolean)
+  - [`hasBeenCalledTimes(times, matcher): boolean`](#hasbeencalledtimestimes-matcher-boolean)
+  - [`reset(): void`](#reset-void)
+  - [`resetMocks(): void`](#resetmocks-void)
+  - [`resetCalls(): void`](#resetcalls-void)
+- [`Options`](#options)
+- [`Matcher`](#matcher)
+- [`MatcherObj`](#matcherobj)
+- [`MatcherFn`](#matcherfn)
+- [`Response`](#response)
+- [`ResponseObj`](#responseobj)
+- [`ResponseFn`](#responsefn)
+- [`MockOptions`](#mockoptions)
+- [`Mock`](#mock)
+- [`Call`](#call)
 
 ## `MockServer`
 
