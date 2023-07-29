@@ -11,11 +11,13 @@
   ],
   "scripts": {
     "build": "rimraf dist && tsc -p tsconfig.build.json",
+    "coverage": "mkdir -p coverage && touch coverage/lcov.info && nyc report --reporter=text-lcov > coverage/lcov.info",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
     "lint": "eslint --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "npm run lint -- --fix",
     "prepublishOnly": "npm run build",
+    "test": "nyc node --trace-warnings -r ts-node/register --test tests/run.ts",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -30,8 +32,12 @@
     "@typescript-eslint/parser": "^6.2.0",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
+    "get-port-please": "^3.0.1",
+    "node-mocks-http": "^1.12.2",
+    "nyc": "^15.1.0",
     "prettier": "^3.0.0",
     "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }
