@@ -308,6 +308,9 @@ Register a mock.
 | response | `string` \| `number` \| [`Response`](#response) | -       |
 | options  | [`MockOptions`](#mockoptions)                   | `{}`    |
 
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
+
 Returns the [`MockServer`](#mockserver) instance.
 
 #### Example
@@ -331,6 +334,10 @@ Register a mock that only responds to requests using the HTTP `GET` method.
 | matcher  | `string` \| `RegExp` \| [`MatcherObj`](#matcherobj) | -       |
 | response | `string` \| `number` \| [`Response`](#response)     | -       |
 | options  | [`MockOptions`](#mockoptions)                       | `{}`    |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
 
 Returns the [`MockServer`](#mockserver) instance.
 
@@ -359,6 +366,10 @@ Register a mock that only responds to requests using the HTTP `POST` method.
 | matcher  | `string` \| `RegExp` \| [`MatcherObj`](#matcherobj) | -       |
 | response | `string` \| `number` \| [`Response`](#response)     | -       |
 | options  | [`MockOptions`](#mockoptions)                       | `{}`    |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
 
 Returns the [`MockServer`](#mockserver) instance.
 
@@ -391,6 +402,10 @@ Register a mock that only responds to requests using the HTTP `PATCH` method.
 | response | `string` \| `number` \| [`Response`](#response)     | -       |
 | options  | [`MockOptions`](#mockoptions)                       | `{}`    |
 
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
+
 Returns the [`MockServer`](#mockserver) instance.
 
 #### Example
@@ -421,6 +436,10 @@ Register a mock that only responds to requests using the HTTP `DELETE` method.
 | matcher  | `string` \| `RegExp` \| [`MatcherObj`](#matcherobj) | -       |
 | response | `string` \| `number` \| [`Response`](#response)     | -       |
 | options  | [`MockOptions`](#mockoptions)                       | `{}`    |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
 
 Returns the [`MockServer`](#mockserver) instance.
 
@@ -606,13 +625,13 @@ type Matcher = MatcherObj | MatcherFn;
 
 object with the following properties:
 
-| Property | Type                                                                                        | Description                       |
-| -------- | ------------------------------------------------------------------------------------------- | --------------------------------- |
-| method   | `string` \| `undefined`                                                                     | HTTP method to match against      |
-| path     | `string` \| `RegExp` \| `undefined`                                                         | path to match against             |
-| query    | [`express.Request["query"]`](https://expressjs.com/en/4x/api.html#req.query) \| `undefined` | query parameters to match against |
-| headers  | `Record<string, string \| undefined>` \| `undefined`                                        | headers to match against          |
-| body     | `string` \| `object` \| `undefined`                                                         | body to match against             |
+| Property | Type                                                                                        | Description                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| method   | `string` \| `undefined`                                                                     | HTTP method to match against                                                                                  |
+| path     | `string` \| `RegExp` \| `undefined`                                                         | path to match against                                                                                         |
+| query    | [`express.Request["query"]`](https://expressjs.com/en/4x/api.html#req.query) \| `undefined` | query parameters to match against.<br/>Parameters explicitly set to `undefined` will not match when provided. |
+| headers  | `Record<string, string \| undefined>` \| `undefined`                                        | headers to match against.<br/>Headers explicitly set to `undefined` will not match when provided.             |
+| body     | `string` \| `object` \| `undefined`                                                         | body to match against.<br/>If an `object` is given it will be compared to the request body parsed as JSON.    |
 
 ## `MatcherFn`
 
@@ -634,11 +653,11 @@ type Response = ResponseObj | ResponseFn;
 
 object with the following properties:
 
-| Property | Type                                    | Description                 |
-| -------- | --------------------------------------- | --------------------------- |
-| status   | `number` \| `undefined`                 | status code to respond with |
-| headers  | `Record<string, string>` \| `undefined` | headers to respond with     |
-| body     | `string` \| `object` \| `undefined`     | body to respond with        |
+| Property | Type                                    | Description                                                                              |
+| -------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| status   | `number` \| `undefined`                 | status code to respond with                                                              |
+| headers  | `Record<string, string>` \| `undefined` | headers to respond with                                                                  |
+| body     | `string` \| `object` \| `undefined`     | body to respond with.<br/>If an `object` is given it will be converted to a JSON string. |
 
 ## `ResponseFn`
 
