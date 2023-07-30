@@ -104,18 +104,17 @@ describe("matchRequest", () => {
     const matcher = { body: "foobar" };
 
     const matches = [
-      { body: "foobar" },
-      { body: "foobar", path: "/foo" },
-      { body: "foobar", query: { foo: "bar" } },
+      { body: Buffer.from("foobar", "utf-8") },
+      { body: Buffer.from("foobar", "utf-8"), path: "/foo" },
+      { body: Buffer.from("foobar", "utf-8"), query: { foo: "bar" } },
     ];
 
     const fails = [
-      { body: "foobaz" },
-      { body: "foobaz", path: "/foo" },
+      { body: Buffer.from("foobaz", "utf-8") },
+      { body: Buffer.from("foobaz", "utf-8"), path: "/foo" },
       { path: "/foo" },
     ];
 
-    // @ts-expect-error RequestOptions type doesn't allow body to be a string
     assertRequestMatches(matcher, { matches, fails });
   });
 
@@ -123,38 +122,27 @@ describe("matchRequest", () => {
     const matcher = { body: { foo: "bar" } };
 
     const matches = [
-      { body: JSON.stringify({ foo: "bar" }) },
-      { body: JSON.stringify({ foo: "bar" }), path: "/foo" },
-      { body: JSON.stringify({ foo: "bar" }), query: { foo: "bar" } },
+      { body: Buffer.from(JSON.stringify({ foo: "bar" }), "utf-8") },
+      {
+        body: Buffer.from(JSON.stringify({ foo: "bar" }), "utf-8"),
+        path: "/foo",
+      },
+      {
+        body: Buffer.from(JSON.stringify({ foo: "bar" }), "utf-8"),
+        query: { foo: "bar" },
+      },
     ];
 
     const fails = [
-      { body: JSON.stringify({ foo: "baz" }) },
-      { body: JSON.stringify({ foo: "baz" }), path: "/foo" },
+      { body: Buffer.from(JSON.stringify({ foo: "baz" }), "utf-8") },
+      {
+        body: Buffer.from(JSON.stringify({ foo: "baz" }), "utf-8"),
+        path: "/foo",
+      },
+      { body: Buffer.from('lk"smal}ks{d', "utf-8") },
       { path: "/foo" },
     ];
 
-    // @ts-expect-error RequestOptions type doesn't allow body to be a string
-    assertRequestMatches(matcher, { matches, fails });
-  });
-
-  it("matches with json body", () => {
-    const matcher = { body: { foo: "bar" } };
-
-    const matches = [
-      { body: { foo: "bar" } },
-      { body: { foo: "bar" }, path: "/foo" },
-      { body: { foo: "bar" }, query: { foo: "bar" } },
-    ];
-
-    const fails = [
-      { body: "{{[7,2" },
-      { body: { foo: "baz" } },
-      { body: { foo: "baz" }, path: "/foo" },
-      { path: "/foo" },
-    ];
-
-    // @ts-expect-error RequestOptions type doesn't allow body to be a string
     assertRequestMatches(matcher, { matches, fails });
   });
 
