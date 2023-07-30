@@ -105,6 +105,7 @@ See [`get()`](#getmatcher-response-options-mockserver) [`post()`](#postmatcher-r
 mockServer
   .get("/test", { status: 200, body: { message: "Hello World" } })
   .post("/test", { status: 201, body: { message: "Created" } })
+  .patch("/test", { status: 200, body: { message: "Updated" } })
   .delete("/test", { status: 204 });
 ```
 
@@ -120,7 +121,7 @@ console.log(response.status); // 404
 
 ## Ambiguous mocks
 
-If 2 or more mocks match the same request the server will respond with a 404 status code.
+If two or more mocks match the same request the server will respond with a 404 status code.
 
 ```ts
 mockServer.mock({ path: "/foo" }, "foo").mock({ path: "/foo" }, "bar");
@@ -161,7 +162,7 @@ console.log(response.status); // 404
 
 ## Testing
 
-Set up a mock server for each test using [`start()`](#start-promisevoid), [`stop()`](#stop-promisevoid) and [`reset()`](#reset-void).
+Set up the mock server for each test using [`start()`](#start-promisevoid), [`stop()`](#stop-promisevoid) and [`reset()`](#reset-void).
 
 ```ts
 import { MockServer } from "mocaron";
@@ -174,7 +175,7 @@ afterAll(() => mockServer.stop());
 beforeEach(() => mockServer.reset());
 ```
 
-Testing that a mock has been called using [`hasBeenCalledWith()`](#hasbeencalledwithmatcher-boolean).
+Test that a mock has been called using [`hasBeenCalledWith()`](#hasbeencalledwithmatcher-boolean).
 
 ```ts
 test("mock has been called", async () => {
@@ -186,7 +187,7 @@ test("mock has been called", async () => {
 });
 ```
 
-Testing that a mock has been called a specific number of times using [`hasBeenCalledTimes()`](#hasbeencalledtimestimes-matcher-boolean).
+Test that a mock has been called a specific number of times using [`hasBeenCalledTimes()`](#hasbeencalledtimestimes-matcher-boolean).
 
 ```ts
 test("mock has been called 3 times", async () => {
@@ -316,7 +317,7 @@ Returns the [`MockServer`](#mockserver) instance.
 #### Example
 
 ```ts
-mockServer.mock("/test", { status: 204 });
+mockServer.mock({ path: "/test" }, { status: 204 });
 
 const response = await fetch("http://localhost:3000/test");
 
@@ -607,7 +608,7 @@ console.log(mockServer.calls()); // []
 
 ## `Options`
 
-object with the following properties:
+Object with the following properties:
 
 | Property | Type     | Description                    |
 | -------- | -------- | ------------------------------ |
@@ -623,7 +624,7 @@ type Matcher = MatcherObj | MatcherFn;
 
 ## `MatcherObj`
 
-object with the following properties:
+Object with the following properties:
 
 | Property | Type                                                                                        | Description                                                                                                   |
 | -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
@@ -635,7 +636,7 @@ object with the following properties:
 
 ## `MatcherFn`
 
-A function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns whether the request should match.
+Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns whether the request should match.
 
 ```ts
 type MatcherFn = (req: express.Request) => boolean;
@@ -651,7 +652,7 @@ type Response = ResponseObj | ResponseFn;
 
 ## `ResponseObj`
 
-object with the following properties:
+Object with the following properties:
 
 | Property | Type                                    | Description                                                                              |
 | -------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -661,7 +662,7 @@ object with the following properties:
 
 ## `ResponseFn`
 
-A function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns an [`ResponseObj`](#responseobj).
+Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns an [`ResponseObj`](#responseobj).
 
 ```ts
 type ResponseFn = (req: express.Request) => ResponseObj;
@@ -669,7 +670,7 @@ type ResponseFn = (req: express.Request) => ResponseObj;
 
 ## `MockOptions`
 
-object with the following properties:
+Object with the following properties:
 
 | Property  | Type                     | Description                                                                                                        |
 | --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
@@ -677,7 +678,7 @@ object with the following properties:
 
 ## `Mock`
 
-object with the following properties:
+Object with the following properties:
 
 | Property | Type                          | Description                                        |
 | -------- | ----------------------------- | -------------------------------------------------- |
@@ -687,7 +688,7 @@ object with the following properties:
 
 ## `Call`
 
-object with the following properties:
+Object with the following properties:
 
 | Property | Type                                                          | Description                         |
 | -------- | ------------------------------------------------------------- | ----------------------------------- |
