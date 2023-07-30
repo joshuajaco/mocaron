@@ -90,12 +90,12 @@ function matchHeaders(matcher: MatcherObj, req: express.Request) {
 function matchBody(matcher: MatcherObj, req: express.Request) {
   if (!matcher.body) return true;
 
+  // body-parser will parse the body into a Buffer. See https://github.com/expressjs/body-parser#bodyparserrawoptions
+  // if the body was empty, it will be an empty object ({}). See https://github.com/expressjs/body-parser#api
+  if (!(req.body instanceof Buffer)) return false;
+
   if (typeof matcher.body === "string") {
     return matcher.body === req.body.toString();
-  }
-
-  if (typeof req.body === "object") {
-    return deepEqual(matcher.body, req.body, { strict: true });
   }
 
   try {
