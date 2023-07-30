@@ -307,10 +307,11 @@ Register a mock.
 
 | Param    | Type                                            | Default |
 | -------- | ----------------------------------------------- | ------- |
-| matcher  | [`Matcher`](#matcher)                           | -       |
+| matcher  | `string` \| `RegExp` \| [`Matcher`](#matcher)   | -       |
 | response | `string` \| `number` \| [`Response`](#response) | -       |
 | options  | [`MockOptions`](#mockoptions)                   | `{}`    |
 
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
 If `response` is a `string`, it will be used as the response body.  
 If `response` is a `number`, it will be used as the response status code.
 
@@ -538,9 +539,11 @@ console.log(calls);
 
 Check if the route has been called with the given `matcher`.
 
-| Param   | Type                  | Default |
-| ------- | --------------------- | ------- |
-| matcher | [`Matcher`](#matcher) | -       |
+| Param   | Type                                          | Default |
+| ------- | --------------------------------------------- | ------- |
+| matcher | `string` \| `RegExp` \| [`Matcher`](#matcher) | -       |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.
 
 Returns `true` if the route has been called with the given `matcher`, `false` otherwise.
 
@@ -562,10 +565,12 @@ console.log(mockServer.hasBeenCalledWith({ path: "/test" })); // true
 
 Check if the route has been called a certain number of times with the given `matcher`.
 
-| Param   | Type                  | Default |
-| ------- | --------------------- | ------- |
-| times   | `number`              | -       |
-| matcher | [`Matcher`](#matcher) | -       |
+| Param   | Type                                          | Default |
+| ------- | --------------------------------------------- | ------- |
+| times   | `number`                                      | -       |
+| matcher | `string` \| `RegExp` \| [`Matcher`](#matcher) | -       |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.
 
 Returns `true` if the route has been called `times` times with the given `matcher`, `false` otherwise.
 

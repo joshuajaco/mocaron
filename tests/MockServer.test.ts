@@ -116,12 +116,9 @@ describe("MockServer", () => {
     });
   });
 
-  describe("#get", () => {
+  describe("#mock", () => {
     it("mocks a request", async () => {
-      mockServer.get("/test", {
-        body: "Hello World",
-        headers: { "Content-Type": "text/plain" },
-      });
+      mockServer.mock("/test", "Hello World");
 
       const response = await fetch(`${host}/test`);
       const text = await response.text();
@@ -134,7 +131,7 @@ describe("MockServer", () => {
       const calls: string[][] = [];
       console.warn = (...args) => calls.push(args);
 
-      mockServer.get("/test", "Hello World").get("/test", "World Hello");
+      mockServer.mock("/test", "Hello World").mock("/test", "World Hello");
 
       try {
         const response = await fetch(`${host}/test`);
@@ -151,13 +148,27 @@ describe("MockServer", () => {
 
     it("allows overwriting previous mocks", async () => {
       mockServer
-        .get("/test", "Hello World")
-        .get("/test", "World Hello", { overwrite: true });
+        .mock("/test", "Hello World")
+        .mock("/test", "World Hello", { overwrite: true });
 
       const response = await fetch(`${host}/test`);
       const text = await response.text();
 
       assert.equal(text, "World Hello");
+    });
+  });
+
+  describe("#get", () => {
+    it("mocks a request", async () => {
+      mockServer.get("/test", {
+        body: "Hello World",
+        headers: { "Content-Type": "text/plain" },
+      });
+
+      const response = await fetch(`${host}/test`);
+      const text = await response.text();
+
+      assert.equal(text, "Hello World");
     });
   });
 
@@ -214,17 +225,6 @@ describe("MockServer", () => {
         method: "DELETE",
       });
 
-      const text = await response.text();
-
-      assert.equal(text, "Hello World");
-    });
-  });
-
-  describe("#mock", () => {
-    it("mocks a request", async () => {
-      mockServer.mock({ method: "GET", path: "/test" }, "Hello World");
-
-      const response = await fetch(`${host}/test`);
       const text = await response.text();
 
       assert.equal(text, "Hello World");
