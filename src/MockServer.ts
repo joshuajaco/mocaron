@@ -4,34 +4,105 @@ import bodyParser from "body-parser";
 import { matchRequest } from "./matchRequest";
 import type { Matcher, MatcherObj } from "./matchRequest";
 
+/** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj} */
 export type ResponseObj = {
+  /**
+   * status code to respond with (defaults to `200`)
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj}
+   */
   status?: number;
-  body?: string | object;
+  /**
+   * headers to respond with
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj}
+   */
   headers?: Record<string, string>;
+  /**
+   * body to respond with -
+   * If an `object` is given it will be converted to a JSON string
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj}
+   */
+  body?: string | object;
 };
 
+/**
+ * @param {express.Request} req - request to match against
+ * @returns {ResponseObj} response the mock server should respond with
+ * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responsefn}
+ */
 export type ResponseFn = (req: express.Request) => ResponseObj;
 
+/**
+ * response the mock server should respond with
+ * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#response}
+ */
 export type Response = ResponseObj | ResponseFn;
 
-export type MockOptions = { overwrite?: boolean };
+/** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mockoptions} */
+export type MockOptions = {
+  /**
+   * when set to `true`,
+   * previous [ambiguous mocks]{@link https://github.com/joshuajaco/mocaron#ambiguous-mocks} matching the same request will be overwritten
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mockoptions}
+   */
+  overwrite?: boolean;
+};
 
+/** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mock} */
 export type Mock = {
+  /**
+   * matcher to match against the request
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mock}
+   */
   matcher: Matcher;
+  /**
+   * response the server will respond with when matched
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mock}
+   */
   response: Response;
+  /** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mock} */
   options: MockOptions;
 };
 
-export type Call = { request: express.Request; matcher: Matcher };
+/** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#call} */
+export type Call = {
+  /**
+   * request the server was called with
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#call}
+   */
+  request: express.Request;
+  /**
+   * matcher the request matched against
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#call}
+   */
+  matcher: Matcher;
+};
 
-export type Options = { port: number };
+/** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#options} */
+export type Options = {
+  /**
+   * port to run the mock server on
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#options}
+   */
+  port: number;
+};
 
+/**
+ * `mocaron` mock server
+ * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mockserver}
+ */
 export class MockServer {
   #mocks: Mock[] = [];
   #calls: Call[] = [];
   #server: http.Server | null = null;
   readonly #app = express();
 
+  /**
+   * Create a new mock server instance.
+   * @param {Options} options
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#constructoroptions-mockserver}
+   * @example
+   * const mockServer = new MockServer({ port: 3000 });
+   */
   constructor(private readonly options: Options) {
     this.#app.use(bodyParser.raw({ type: "*/*" }));
 
@@ -81,6 +152,13 @@ export class MockServer {
     });
   }
 
+  /**
+   * Start the mock server.
+   * @async
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#start-promisevoid}
+   * @example
+   * await mockServer.start();
+   */
   public start(): Promise<void> {
     if (this.#server) {
       console.warn("Server is already running");
@@ -92,6 +170,13 @@ export class MockServer {
     });
   }
 
+  /**
+   * Stop the mock server.
+   * @async
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#stop-promisevoid}
+   * @example
+   * await mockServer.stop();
+   */
   public stop(): Promise<void> {
     const server = this.#server;
     if (server) return new Promise((resolve) => server.close(() => resolve()));
@@ -99,15 +184,31 @@ export class MockServer {
     return Promise.resolve();
   }
 
-  public port() {
+  /**
+   * Get the port the mock server is running on.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#port-number}
+   * @example
+   * mockServer.port();
+   */
+  public port(): number {
     return this.options.port;
   }
 
+  /**
+   * Register a mock.
+   * @param {Matcher} matcher
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mockmatcher-response-options-mockserver}
+   * @example
+   * mockServer.mock({ path: "/test" }, { status: 204 });
+   */
   public mock(
     matcher: Matcher,
     response: string | number | Response,
     options: MockOptions = {},
-  ) {
+  ): this {
     this.#mocks.push({
       matcher,
       response:
@@ -122,55 +223,172 @@ export class MockServer {
     return this;
   }
 
-  public get = this.#createMockFn("GET");
-  public post = this.#createMockFn("POST");
-  public patch = this.#createMockFn("PATCH");
-  public delete = this.#createMockFn("DELETE");
+  /**
+   * Register a mock that only responds to requests using the http `GET` method.
+   * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#getmatcher-response-options-mockserver}
+   * @example
+   * mockServer.get("/test", {
+   *   status: 200,
+   *   body: { message: "Hello World" },
+   * });
+   */
+  public get(
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+    response: string | number | Response,
+    options: MockOptions = {},
+  ): this {
+    return this.mock(this.#applyMethod("GET", matcher), response, options);
+  }
 
+  /**
+   * Register a mock that only responds to requests using the http `POST` method.
+   * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#postmatcher-response-options-mockserver}
+   * @example
+   * mockServer.post("/test", {
+   *   status: 201,
+   *   body: { message: "Hello World" },
+   * });
+   */
+  public post(
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+    response: string | number | Response,
+    options: MockOptions = {},
+  ): this {
+    return this.mock(this.#applyMethod("POST", matcher), response, options);
+  }
+
+  /**
+   * Register a mock that only responds to requests using the http `PATCH` method.
+   * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#patchmatcher-response-options-mockserver}
+   * @example
+   * mockServer.patch("/test", {
+   *   status: 200,
+   *   body: { message: "Hello World" },
+   * });
+   */
+  public patch(
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+    response: string | number | Response,
+    options: MockOptions = {},
+  ): this {
+    return this.mock(this.#applyMethod("PATCH", matcher), response, options);
+  }
+
+  /**
+   * Register a mock that only responds to requests using the http `DELETE` method.
+   * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#deletematcher-response-options-mockserver}
+   * @example
+   * mockServer.delete("/test", { status: 204 });
+   */
+  public delete(
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+    response: string | number | Response,
+    options: MockOptions = {},
+  ): this {
+    return this.mock(this.#applyMethod("DELETE", matcher), response, options);
+  }
+
+  /**
+   * Get all registered mocks.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#mocks-readonly-mock}
+   * @example
+   * mockServer.mocks();
+   */
   public mocks(): readonly Mock[] {
     return this.#mocks.slice();
   }
 
+  /**
+   * Get all registered calls.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#calls-readonly-call}
+   * @example
+   * mockServer.calls();
+   */
   public calls(): readonly Call[] {
     return this.#calls.slice();
   }
 
-  public hasBeenCalledWith(matcher: Matcher) {
+  /**
+   * Check if the route has been called with the given `matcher`.
+   * @param {Matcher} matcher
+   * @returns {boolean} `true` if the route has been called with the given `matcher`, `false` otherwise
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#hasbeencalledwithmatcher-boolean}
+   * @example
+   * mockServer.hasBeenCalledWith({ path: "/test" });
+   */
+  public hasBeenCalledWith(matcher: Matcher): boolean {
     return this.#calls.some(({ request }) => matchRequest(matcher, request));
   }
 
-  public hasBeenCalledTimes(times: number, matcher: Matcher) {
+  /**
+   * Check if the route has been called a certain number of times with the given `matcher`.
+   * @param {number} times
+   * @param {Matcher} matcher
+   * @returns {boolean} `true` if the route has been called `times` times with the given `matcher`, `false` otherwise
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#hasbeencalledtimestimes-matcher-boolean}
+   * @example
+   * mockServer.hasBeenCalledTimes(1, { path: "/test" });
+   */
+  public hasBeenCalledTimes(times: number, matcher: Matcher): boolean {
     return (
       this.#calls.filter(({ request }) => matchRequest(matcher, request))
         .length === times
     );
   }
 
-  public resetMocks() {
-    this.#mocks = [];
-  }
-
-  public resetCalls() {
-    this.#calls = [];
-  }
-
-  public reset() {
+  /**
+   * Reset all mocks and calls.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#reset-void}
+   * @example
+   * mockServer.reset();
+   */
+  public reset(): void {
     this.resetMocks();
     this.resetCalls();
   }
 
-  #createMockFn(method: string) {
-    return (
-      matcher: string | RegExp | Omit<MatcherObj, "method">,
-      response: string | number | Response,
-      options: MockOptions = {},
-    ) =>
-      this.mock(
-        typeof matcher === "string" || matcher instanceof RegExp
-          ? { path: matcher, method }
-          : { ...matcher, method },
-        response,
-        options,
-      );
+  /**
+   * Reset all mocks.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#resetmocks-void}
+   * @example
+   * mockServer.resetMocks();
+   */
+  public resetMocks(): void {
+    this.#mocks = [];
+  }
+
+  /**
+   * Reset all calls.
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#resetcalls-void}
+   * @example
+   * mockServer.resetCalls();
+   */
+  public resetCalls(): void {
+    this.#calls = [];
+  }
+
+  #applyMethod(
+    method: string,
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+  ): MatcherObj {
+    return typeof matcher === "string" || matcher instanceof RegExp
+      ? { path: matcher, method }
+      : { ...matcher, method };
   }
 }
