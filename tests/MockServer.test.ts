@@ -176,6 +176,21 @@ describe("MockServer", () => {
     });
   });
 
+  describe("#put", () => {
+    it("mocks a request", async () => {
+      mockServer.put({ path: "/test" }, "Hello World");
+
+      const response = await fetch(`${host}/test`, {
+        method: "PUT",
+        body: "test",
+      });
+
+      const text = await response.text();
+
+      assert.equal(text, "Hello World");
+    });
+  });
+
   describe("#patch", () => {
     it("mocks a request", async () => {
       mockServer.patch({ path: "/test" }, "Hello World");

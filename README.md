@@ -99,12 +99,13 @@ console.log(await response.json()); // { message: "Hello World" }
 
 You can also register mocks that only match a specific HTTP method.
 
-See [`get()`](#getmatcher-response-options-mockserver) [`post()`](#postmatcher-response-options-mockserver) [`patch()`](#patchmatcher-response-options-mockserver) [`delete()`](#deletematcher-response-options-mockserver)
+See [`get()`](#getmatcher-response-options-mockserver) [`post()`](#postmatcher-response-options-mockserver) [`put()`](#putmatcher-response-options-mockserver) [`patch()`](#patchmatcher-response-options-mockserver) [`delete()`](#deletematcher-response-options-mockserver)
 
 ```ts
 mockServer
   .get("/test", { status: 200, body: { message: "Hello World" } })
   .post("/test", { status: 201, body: { message: "Created" } })
+  .put("/test", { status: 200, body: { message: "Replaced" } })
   .patch("/test", { status: 200, body: { message: "Updated" } })
   .delete("/test", { status: 204 });
 ```
@@ -224,6 +225,7 @@ test("custom assertion", async () => {
   - [`mock()`](#mockmatcher-response-options-mockserver)
   - [`get()`](#getmatcher-response-options-mockserver)
   - [`post()`](#postmatcher-response-options-mockserver)
+  - [`put()`](#putmatcher-response-options-mockserver)
   - [`patch()`](#patchmatcher-response-options-mockserver)
   - [`delete()`](#deletematcher-response-options-mockserver)
   - [`mocks()`](#mocks-readonly-mock)
@@ -388,6 +390,41 @@ const response = await fetch("http://localhost:3000/test", {
 });
 
 console.log(response.status); // 201
+console.log(await response.json()); // { message: "Hello World" }
+```
+
+---
+
+### `put(matcher, response, options): MockServer`
+
+Register a mock that only responds to requests using the HTTP `PUT` method.
+
+| Param    | Type                                                | Default |
+| -------- | --------------------------------------------------- | ------- |
+| matcher  | `string` \| `RegExp` \| [`MatcherObj`](#matcherobj) | -       |
+| response | `string` \| `number` \| [`Response`](#response)     | -       |
+| options  | [`MockOptions`](#mockoptions)                       | `{}`    |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.  
+If `response` is a `string`, it will be used as the response body.  
+If `response` is a `number`, it will be used as the response status code.
+
+Returns the [`MockServer`](#mockserver) instance.
+
+#### Example
+
+```ts
+mockServer.put("/test", {
+  status: 200,
+  body: { message: "Hello World" },
+});
+
+const response = await fetch("http://localhost:3000/test", {
+  method: "PUT",
+  body: JSON.stringify({ message: "Hello World" }),
+});
+
+console.log(response.status); // 200
 console.log(await response.json()); // { message: "Hello World" }
 ```
 
