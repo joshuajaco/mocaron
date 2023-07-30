@@ -1,5 +1,7 @@
 <p align="center">
-  <img width="85%" src="https://raw.githubusercontent.com/joshuajaco/mocaron/main/logo.png" alt="mocaron" />
+  <a href="https://github.com/joshuajaco/mocaron">
+    <img width="85%" src="https://raw.githubusercontent.com/joshuajaco/mocaron/main/logo.png" alt="mocaron" />
+  </a>
   <br />
   <br />
   <a href="https://npmjs.com/package/mocaron">
