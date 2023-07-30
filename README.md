@@ -61,6 +61,156 @@ await mockServer.stop();
 
 # Usage
 
+## Starting and stopping the mock server
+
+See [`constructor()`](#constructoroptions-mockserver) [`start()`](#start-promisevoid) [`stop()`](#stop-promisevoid)
+
+```ts
+import { MockServer } from "mocaron";
+
+const mockServer = new MockServer({ port: 3000 });
+
+await mockServer.start();
+
+// ...
+
+await mockServer.stop();
+```
+
+## Registering a mock
+
+Register a mock using [`mock()`](#mockmatcher-response-options-mockserver).
+
+```ts
+mockServer.mock(
+  { path: "/test", method: "GET" },
+  { status: 200, body: { message: "Hello World" } },
+);
+
+const response = await fetch("http://localhost:3000/test");
+
+console.log(response.status); // 200
+console.log(await response.json()); // { message: "Hello World" }
+```
+
+## Method specific mocks
+
+You can also register mocks that only match a specific HTTP method.
+
+See [`get()`](#getmatcher-response-options-mockserver) [`post()`](#postmatcher-response-options-mockserver) [`patch()`](#patchmatcher-response-options-mockserver) [`delete()`](#deletematcher-response-options-mockserver)
+
+```ts
+mockServer
+  .get("/test", { status: 200, body: { message: "Hello World" } })
+  .post("/test", { status: 201, body: { message: "Created" } })
+  .delete("/test", { status: 204 });
+```
+
+## Unmatched requests
+
+If a request does not match any of the registered mocks the server will respond with a 404 status code.
+
+```ts
+const response = await fetch("http://localhost:3000/test");
+
+console.log(response.status); // 404
+```
+
+## Ambiguous mocks
+
+If 2 or more mocks match the same request the server will respond with a 404 status code.
+
+```ts
+mockServer.mock({ path: "/foo" }, "foo").mock({ path: "/foo" }, "bar");
+
+const response = await fetch("http://localhost:3000/foo");
+
+console.log(response.status); // 404
+```
+
+You can override this behavior by passing the [`overwrite`](#mockoptions) option to the last matching mock.
+
+```ts
+mockServer
+  .mock({ path: "/foo" }, "foo")
+  .mock({ path: "/foo" }, "bar", { overwrite: true });
+
+const response = await fetch("http://localhost:3000/foo");
+
+console.log(response.status); // 200
+console.log(await response.text()); // bar
+```
+
+## Resetting the mock server
+
+Calling [`reset()`](#reset-void) will reset the mock server to its initial state.
+
+```ts
+mockServer.get("/test", { status: 200 });
+
+let response = await fetch("http://localhost:3000/test");
+console.log(response.status); // 200
+
+mockServer.reset();
+
+response = await fetch("http://localhost:3000/test");
+console.log(response.status); // 404
+```
+
+## Testing
+
+Set up a mock server for each test using [`start()`](#start-promisevoid), [`stop()`](#stop-promisevoid) and [`reset()`](#reset-void).
+
+```ts
+import { MockServer } from "mocaron";
+import { beforeAll, afterAll, beforeEach, test, assert } from "my-test-library";
+
+const mockServer = new MockServer({ port: 3000 });
+
+beforeAll(() => mockServer.start());
+afterAll(() => mockServer.stop());
+beforeEach(() => mockServer.reset());
+```
+
+Testing that a mock has been called using [`hasBeenCalledWith()`](#hasbeencalledwithmatcher-boolean).
+
+```ts
+test("mock has been called", async () => {
+  mockServer.get("/test", { status: 200 });
+
+  await fetch("http://localhost:3000/test");
+
+  assert(mockServer.hasBeenCalledWith({ path: "/test" }));
+});
+```
+
+Testing that a mock has been called a specific number of times using [`hasBeenCalledTimes()`](#hasbeencalledtimestimes-matcher-boolean).
+
+```ts
+test("mock has been called 3 times", async () => {
+  mockServer.get("/test", { status: 200 });
+
+  await fetch("http://localhost:3000/test");
+  await fetch("http://localhost:3000/test");
+  await fetch("http://localhost:3000/test");
+
+  assert(mockServer.hasBeenCalledTimes(3, { path: "/test" }));
+});
+```
+
+Custom assertions using [`calls()`](#calls-readonly-call).
+
+```ts
+test("custom assertion", async () => {
+  mockServer.get("/test", { status: 200 });
+
+  await fetch("http://localhost:3000/test");
+
+  assert(mockServer.calls().length === 1);
+  assert(mockServer.calls()[0].request.path === "/test");
+});
+```
+
 # API
 
 - [`MockServer`](#mockserver)
@@ -172,7 +322,7 @@ console.log(response.status); // 204
 
 ### `get(matcher, response, options): MockServer`
 
-Register a mock that only responds to requests using the http `GET` method.
+Register a mock that only responds to requests using the HTTP `GET` method.
 
 | Param    | Type                                                | Default |
 | -------- | --------------------------------------------------- | ------- |
@@ -200,7 +350,7 @@ console.log(await response.json()); // { message: "Hello World" }
 
 ### `post(matcher, response, options): MockServer`
 
-Register a mock that only responds to requests using the http `POST` method.
+Register a mock that only responds to requests using the HTTP `POST` method.
 
 | Param    | Type                                                | Default |
 | -------- | --------------------------------------------------- | ------- |
@@ -231,7 +381,7 @@ console.log(await response.json()); // { message: "Hello World" }
 
 ### `patch(matcher, response, options): MockServer`
 
-Register a mock that only responds to requests using the http `PATCH` method.
+Register a mock that only responds to requests using the HTTP `PATCH` method.
 
 | Param    | Type                                                | Default |
 | -------- | --------------------------------------------------- | ------- |
@@ -262,7 +412,7 @@ console.log(await response.json()); // { message: "Hello World" }
 
 ### `delete(matcher, response, options): MockServer`
 
-Register a mock that only responds to requests using the http `DELETE` method.
+Register a mock that only responds to requests using the HTTP `DELETE` method.
 
 | Param    | Type                                                | Default |
 | -------- | --------------------------------------------------- | ------- |
@@ -456,7 +606,7 @@ object with the following properties:
 
 | Property | Type                                                                                        | Description                       |
 | -------- | ------------------------------------------------------------------------------------------- | --------------------------------- |
-| method   | `string` \| `undefined`                                                                     | http method to match against      |
+| method   | `string` \| `undefined`                                                                     | HTTP method to match against      |
 | path     | `string` \| `RegExp` \| `undefined`                                                         | path to match against             |
 | query    | [`express.Request["query"]`](https://expressjs.com/en/4x/api.html#req.query) \| `undefined` | query parameters to match against |
 | headers  | `Record<string, string \| undefined>` \| `undefined`                                        | headers to match against          |
@@ -500,9 +650,9 @@ type ResponseFn = (req: express.Request) => ResponseObj;
 
 object with the following properties:
 
-| Property  | Type                     | Description                                                                          |
-| --------- | ------------------------ | ------------------------------------------------------------------------------------ |
-| overwrite | `boolean` \| `undefined` | when set to `true`,<br/>previous mocks matching the same request will be overwritten |
+| Property  | Type                     | Description                                                                                                        |
+| --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| overwrite | `boolean` \| `undefined` | when set to `true`,<br/>previous [ambiguous mocks](#ambiguous-mocks) matching the same request will be overwritten |
 
 ## `Mock`
 
