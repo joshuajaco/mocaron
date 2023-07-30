@@ -266,6 +266,27 @@ export class MockServer {
   }
 
   /**
+   * Register a mock that only responds to requests using the http `PUT` method.
+   * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
+   * @param {MockOptions} [options={}] mock options
+   * @returns {MockServer} this
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#postmatcher-response-options-mockserver}
+   * @example
+   * mockServer.put("/test", {
+   *   status: 200,
+   *   body: { message: "Hello World" },
+   * });
+   */
+  public put(
+    matcher: string | RegExp | Omit<MatcherObj, "method">,
+    response: string | number | Response,
+    options: MockOptions = {},
+  ): this {
+    return this.mock(this.#applyMethod("PUT", matcher), response, options);
+  }
+
+  /**
    * Register a mock that only responds to requests using the http `PATCH` method.
    * @param {string | RegExp | Omit<MatcherObj, "method">} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
    * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
