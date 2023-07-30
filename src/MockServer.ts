@@ -196,7 +196,7 @@ export class MockServer {
 
   /**
    * Register a mock.
-   * @param {Matcher} matcher
+   * @param {string | RegExp | Matcher} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
    * @param {string | number | Response} response - If response is a `string`, it will be used as the response body - If response is a `number`, it will be used as the response status code
    * @param {MockOptions} [options={}] mock options
    * @returns {MockServer} this
@@ -205,10 +205,12 @@ export class MockServer {
    * mockServer.mock({ path: "/test" }, { status: 204 });
    */
   public mock(
-    matcher: Matcher,
+    matcher: string | RegExp | Matcher,
     response: string | number | Response,
     options: MockOptions = {},
   ): this {
+    matcher = this.#resolvePathMatcher(matcher);
+
     this.#mocks.push({
       matcher,
       response:
@@ -347,28 +349,33 @@ export class MockServer {
 
   /**
    * Check if the route has been called with the given `matcher`.
-   * @param {Matcher} matcher
+   * @param {string | RegExp | Matcher} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
    * @returns {boolean} `true` if the route has been called with the given `matcher`, `false` otherwise
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#hasbeencalledwithmatcher-boolean}
    * @example
    * mockServer.hasBeenCalledWith({ path: "/test" });
    */
-  public hasBeenCalledWith(matcher: Matcher): boolean {
-    return this.#calls.some(({ request }) => matchRequest(matcher, request));
+  public hasBeenCalledWith(matcher: string | RegExp | Matcher): boolean {
+    const resolved = this.#resolvePathMatcher(matcher);
+    return this.#calls.some(({ request }) => matchRequest(resolved, request));
   }
 
   /**
    * Check if the route has been called a certain number of times with the given `matcher`.
    * @param {number} times
-   * @param {Matcher} matcher
+   * @param {string | RegExp | Matcher} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
    * @returns {boolean} `true` if the route has been called `times` times with the given `matcher`, `false` otherwise
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#hasbeencalledtimestimes-matcher-boolean}
    * @example
    * mockServer.hasBeenCalledTimes(1, { path: "/test" });
    */
-  public hasBeenCalledTimes(times: number, matcher: Matcher): boolean {
+  public hasBeenCalledTimes(
+    times: number,
+    matcher: string | RegExp | Matcher,
+  ): boolean {
+    const resolved = this.#resolvePathMatcher(matcher);
     return (
-      this.#calls.filter(({ request }) => matchRequest(matcher, request))
+      this.#calls.filter(({ request }) => matchRequest(resolved, request))
         .length === times
     );
   }
@@ -402,6 +409,12 @@ export class MockServer {
    */
   public resetCalls(): void {
     this.#calls = [];
+  }
+
+  #resolvePathMatcher(matcher: string | RegExp | Matcher): Matcher {
+    return typeof matcher === "string" || matcher instanceof RegExp
+      ? { path: matcher }
+      : matcher;
   }
 
   #applyMethod(
