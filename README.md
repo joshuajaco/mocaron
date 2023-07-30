@@ -471,7 +471,8 @@ mockServer.mock({ path: "/test" }, { status: 204 });
 
 const mocks = mockServer.mocks();
 
-console.log(mocks); // [{ matcher: "/test", response: { status: 204 } }]
+console.log(mocks);
+// [{ matcher: { path: "/test" }, response: { status: 204 } }]
 ```
 
 ---
@@ -491,7 +492,7 @@ await fetch("http://localhost:3000/test");
 const calls = mockServer.calls();
 
 console.log(calls);
-// [{ matcher: { path: "/test", request: <express.Request> } }]
+// [{ matcher: { path: "/test" }, request: <express.Request> }]
 ```
 
 ---
@@ -556,10 +557,10 @@ mockServer.get("/test", { status: 200 });
 await fetch("http://localhost:3000/test");
 
 console.log(mockServer.mocks());
-// [{ matcher: "/test", response: { status: 200 } }]
+// [{ matcher: { path: "/test", method: "GET" }, response: { status: 200 } }]
 
 console.log(mockServer.calls());
-// [{ path: "/test", method: "GET", request: <express.Request> }]
+// [{ matcher: { path: "/test", method: "GET" }, request: <express.Request> }]
 
 mockServer.reset();
 
