@@ -656,7 +656,7 @@ Object with the following properties:
 
 | Property | Type                                    | Description                                                                              |
 | -------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
-| status   | `number` \| `undefined`                 | status code to respond with                                                              |
+| status   | `number` \| `undefined`                 | status code to respond with (defaults to `200`)                                          |
 | headers  | `Record<string, string>` \| `undefined` | headers to respond with                                                                  |
 | body     | `string` \| `object` \| `undefined`     | body to respond with.<br/>If an `object` is given it will be converted to a JSON string. |
 
