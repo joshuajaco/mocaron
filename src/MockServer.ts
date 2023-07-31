@@ -2,7 +2,7 @@ import type http from "node:http";
 import express from "express";
 import bodyParser from "body-parser";
 import { matchRequest } from "./matchRequest";
-import type { Matcher, MatcherObj } from "./matchRequest";
+import type { Request, Matcher, MatcherObj } from "./matchRequest";
 
 /** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj} */
 export type ResponseObj = {
@@ -25,11 +25,11 @@ export type ResponseObj = {
 };
 
 /**
- * @param {express.Request} req - request to match against
+ * @param {Request} req - request to match against
  * @returns {ResponseObj} response the mock server should respond with
  * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responsefn}
  */
-export type ResponseFn = (req: express.Request) => ResponseObj;
+export type ResponseFn = (req: Request) => ResponseObj;
 
 /**
  * response the mock server should respond with
@@ -69,7 +69,7 @@ export type Call = {
    * request the server was called with
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#call}
    */
-  request: express.Request;
+  request: Request;
   /**
    * matcher the request matched against
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#call}
@@ -106,7 +106,15 @@ export class MockServer {
   constructor(private readonly options: Options) {
     this.#app.use(bodyParser.raw({ type: "*/*" }));
 
-    this.#app.all("*", (req, res) => {
+    this.#app.use((req, res, next) => {
+      // body-parser will parse the body into a Buffer. See https://github.com/expressjs/body-parser#bodyparserrawoptions
+      // if the body was empty, it will be an empty object ({}). See https://github.com/expressjs/body-parser#api
+      req.body = req.body instanceof Buffer ? req.body : undefined;
+      next();
+    });
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    this.#app.all<"*", {}, unknown, Buffer | undefined>("*", (req, res) => {
       const matches = this.#mocks.filter(({ matcher }) =>
         matchRequest(matcher, req),
       );

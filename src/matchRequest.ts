@@ -1,6 +1,12 @@
 import type express from "express";
 import deepEqual from "deep-equal";
 
+/**
+ * request the server was called with
+ * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#request}
+ */
+export type Request = express.Request<{}, unknown, Buffer | undefined>; // eslint-disable-line @typescript-eslint/ban-types
+
 /** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#matcherobj} */
 export type MatcherObj = {
   /**
@@ -18,7 +24,7 @@ export type MatcherObj = {
    * Parameters explicitly set to `undefined` will not match when provided
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#matcherobj}
    */
-  query?: express.Request["query"];
+  query?: Request["query"];
   /**
    * headers to match against -
    * Headers explicitly set to `undefined` will not match when provided
@@ -34,11 +40,11 @@ export type MatcherObj = {
 };
 
 /**
- * @param {express.Request} req - request to match against
+ * @param {Request} req - request to match against
  * @returns {boolean} whether the request should match
  * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#matcherfn}
  */
-export type MatcherFn = (req: express.Request) => boolean;
+export type MatcherFn = (req: Request) => boolean;
 
 /**
  * matcher to match against the request
@@ -46,7 +52,7 @@ export type MatcherFn = (req: express.Request) => boolean;
  */
 export type Matcher = MatcherObj | MatcherFn;
 
-export function matchRequest(matcher: Matcher, req: express.Request): boolean {
+export function matchRequest(matcher: Matcher, req: Request): boolean {
   if (typeof matcher === "function") return matcher(req);
 
   return (
@@ -58,13 +64,13 @@ export function matchRequest(matcher: Matcher, req: express.Request): boolean {
   );
 }
 
-function matchMethod(matcher: MatcherObj, req: express.Request) {
+function matchMethod(matcher: MatcherObj, req: Request) {
   return (
     !matcher.method || matcher.method.toLowerCase() === req.method.toLowerCase()
   );
 }
 
-function matchPath(matcher: MatcherObj, req: express.Request) {
+function matchPath(matcher: MatcherObj, req: Request) {
   return (
     !matcher.path ||
     (matcher.path instanceof RegExp
@@ -73,26 +79,24 @@ function matchPath(matcher: MatcherObj, req: express.Request) {
   );
 }
 
-function matchQuery(matcher: MatcherObj, req: express.Request) {
+function matchQuery(matcher: MatcherObj, req: Request) {
   if (!matcher.query) return true;
   return Object.entries(matcher.query).every(([k, v]) =>
     deepEqual(req.query[k], v, { strict: true }),
   );
 }
 
-function matchHeaders(matcher: MatcherObj, req: express.Request) {
+function matchHeaders(matcher: MatcherObj, req: Request) {
   if (!matcher.headers) return true;
   return Object.entries(matcher.headers).every(
     ([k, v]) => req.headers[k.toLowerCase()] === v,
   );
 }
 
-function matchBody(matcher: MatcherObj, req: express.Request) {
-  if (!matcher.body) return true;
+function matchBody(matcher: MatcherObj, req: Request) {
+  if (matcher.body == null) return true;
 
-  // body-parser will parse the body into a Buffer. See https://github.com/expressjs/body-parser#bodyparserrawoptions
-  // if the body was empty, it will be an empty object ({}). See https://github.com/expressjs/body-parser#api
-  if (!(req.body instanceof Buffer)) return false;
+  if (!req.body) return false;
 
   if (typeof matcher.body === "string") {
     return matcher.body === req.body.toString();
