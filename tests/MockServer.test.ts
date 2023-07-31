@@ -23,7 +23,9 @@ describe("MockServer", () => {
       .get("/foo", (req) => ({ body: req.query["foo"] ?? "foo" }))
       .post("/bar", 201)
       .get("/bar", { body: { bar: 1 } })
-      .patch("/bar", (req) => ({ body: JSON.parse(req.body) }))
+      .patch("/bar", (req) =>
+        req.body ? { body: JSON.parse(req.body.toString()) } : { status: 400 },
+      )
       .delete("/bar", 204);
 
     {
@@ -64,6 +66,8 @@ describe("MockServer", () => {
     const { warn } = console;
     const calls: string[][] = [];
     console.warn = (...args) => calls.push(args);
+
+    mockServer.mock({ body: "unmatched" }, "Unmatched");
 
     try {
       const response = await fetch(`${host}/test`);

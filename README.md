@@ -236,6 +236,7 @@ test("custom assertion", async () => {
   - [`resetMocks()`](#resetmocks-void)
   - [`resetCalls()`](#resetcalls-void)
 - [`Options`](#options)
+- [`Request`](#request)
 - [`Matcher`](#matcher)
 - [`MatcherObj`](#matcherobj)
 - [`MatcherFn`](#matcherfn)
@@ -657,6 +658,14 @@ Object with the following properties:
 | -------- | -------- | ------------------------------ |
 | port     | `number` | port to run the mock server on |
 
+## `Request`
+
+Type alias for [`express.Request`](https://expressjs.com/en/4x/api.html#req) with the `body` property typed as `Buffer` | `undefined`.
+
+```ts
+type Request = express.Request<{}, unknown, Buffer | undefined>;
+```
+
 ## `Matcher`
 
 Type alias for [`MatcherObj`](#matcherobj) | [`MatcherFn`](#matcherfn).
@@ -669,20 +678,20 @@ type Matcher = MatcherObj | MatcherFn;
 
 Object with the following properties:
 
-| Property | Type                                                                                        | Description                                                                                                   |
-| -------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| method   | `string` \| `undefined`                                                                     | HTTP method to match against                                                                                  |
-| path     | `string` \| `RegExp` \| `undefined`                                                         | path to match against                                                                                         |
-| query    | [`express.Request["query"]`](https://expressjs.com/en/4x/api.html#req.query) \| `undefined` | query parameters to match against.<br/>Parameters explicitly set to `undefined` will not match when provided. |
-| headers  | `Record<string, string \| undefined>` \| `undefined`                                        | headers to match against.<br/>Headers explicitly set to `undefined` will not match when provided.             |
-| body     | `string` \| `object` \| `undefined`                                                         | body to match against.<br/>If an `object` is given it will be compared to the request body parsed as JSON.    |
+| Property | Type                                                                                | Description                                                                                                   |
+| -------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| method   | `string` \| `undefined`                                                             | HTTP method to match against                                                                                  |
+| path     | `string` \| `RegExp` \| `undefined`                                                 | path to match against                                                                                         |
+| query    | [`Request["query"]`](https://expressjs.com/en/4x/api.html#req.query) \| `undefined` | query parameters to match against.<br/>Parameters explicitly set to `undefined` will not match when provided. |
+| headers  | `Record<string, string \| undefined>` \| `undefined`                                | headers to match against.<br/>Headers explicitly set to `undefined` will not match when provided.             |
+| body     | `string` \| `object` \| `undefined`                                                 | body to match against.<br/>If an `object` is given it will be compared to the request body parsed as JSON.    |
 
 ## `MatcherFn`
 
-Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns whether the request should match.
+Function that takes a [`Request`](#request) and returns whether the request should match.
 
 ```ts
-type MatcherFn = (req: express.Request) => boolean;
+type MatcherFn = (req: Request) => boolean;
 ```
 
 ## `Response`
@@ -705,10 +714,10 @@ Object with the following properties:
 
 ## `ResponseFn`
 
-Function that takes an [`express.Request`](https://expressjs.com/en/4x/api.html#req) and returns a [`ResponseObj`](#responseobj).
+Function that takes a [`Request`](#request) and returns a [`ResponseObj`](#responseobj).
 
 ```ts
-type ResponseFn = (req: express.Request) => ResponseObj;
+type ResponseFn = (req: Request) => ResponseObj;
 ```
 
 ## `MockOptions`
@@ -733,10 +742,10 @@ Object with the following properties:
 
 Object with the following properties:
 
-| Property | Type                                                          | Description                         |
-| -------- | ------------------------------------------------------------- | ----------------------------------- |
-| request  | [`express.Request`](https://expressjs.com/en/4x/api.html#req) | request the server was called with  |
-| matcher  | [`Matcher`](#matcher)                                         | matcher the request matched against |
+| Property | Type                  | Description                         |
+| -------- | --------------------- | ----------------------------------- |
+| request  | [`Request`](#request) | request the server was called with  |
+| matcher  | [`Matcher`](#matcher) | matcher the request matched against |
 
 # Changelog
 
