@@ -1,6 +1,6 @@
 {
   "name": "mocaron",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Simple express mock server with a flexible API inspired by fetch-mock",
   "keywords": [
     "mock",
