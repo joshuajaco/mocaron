@@ -1,5 +1,5 @@
-## [v0.1.0] - 2023-XX-XX
+## [v1.0.0] - 2023-07-31
 
 - Initial release
 
-[v0.1.0]: https://github.com/joshuajaco/mocaron/tree/v0.1.0
+[v1.0.0]: https://github.com/joshuajaco/mocaron/tree/v1.0.0
