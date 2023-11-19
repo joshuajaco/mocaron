@@ -225,8 +225,8 @@ export class MockServer {
         typeof response === "string"
           ? { body: response }
           : typeof response === "number"
-          ? { status: response }
-          : response,
+            ? { status: response }
+            : response,
       options,
     });
 
