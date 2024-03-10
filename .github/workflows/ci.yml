@@ -20,6 +20,8 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test
+        env:
+          FORCE_COLOR: 2
       - name: Coveralls
         uses: coverallsapp/github-action@v2
         with:

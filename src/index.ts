@@ -9,3 +9,4 @@ export type {
   Call,
   Options,
 } from "./MockServer";
+export { ExpectationMessage } from "./ExpectationMessage";

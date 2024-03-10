@@ -1,5 +1,6 @@
 import type express from "express";
 import deepEqual from "deep-equal";
+import type http from "node:http";
 
 /**
  * request the server was called with
@@ -30,7 +31,7 @@ export type MatcherObj = {
    * Headers explicitly set to `undefined` will not match when provided
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#matcherobj}
    */
-  headers?: Record<string, string | undefined>;
+  headers?: http.IncomingHttpHeaders;
   /**
    * body to match against -
    * If an `object` is given it will be compared to the request body parsed as JSON
@@ -64,13 +65,13 @@ export function matchRequest(matcher: Matcher, req: Request): boolean {
   );
 }
 
-function matchMethod(matcher: MatcherObj, req: Request) {
+export function matchMethod(matcher: MatcherObj, req: Request) {
   return (
     !matcher.method || matcher.method.toLowerCase() === req.method.toLowerCase()
   );
 }
 
-function matchPath(matcher: MatcherObj, req: Request) {
+export function matchPath(matcher: MatcherObj, req: Request) {
   return (
     !matcher.path ||
     (matcher.path instanceof RegExp
@@ -79,21 +80,21 @@ function matchPath(matcher: MatcherObj, req: Request) {
   );
 }
 
-function matchQuery(matcher: MatcherObj, req: Request) {
+export function matchQuery(matcher: MatcherObj, req: Request) {
   if (!matcher.query) return true;
   return Object.entries(matcher.query).every(([k, v]) =>
     deepEqual(req.query[k], v, { strict: true }),
   );
 }
 
-function matchHeaders(matcher: MatcherObj, req: Request) {
+export function matchHeaders(matcher: MatcherObj, req: Request) {
   if (!matcher.headers) return true;
   return Object.entries(matcher.headers).every(
     ([k, v]) => req.headers[k.toLowerCase()] === v,
   );
 }
 
-function matchBody(matcher: MatcherObj, req: Request) {
+export function matchBody(matcher: MatcherObj, req: Request) {
   if (matcher.body == null) return true;
 
   if (!req.body) return false;

@@ -232,9 +232,13 @@ test("custom assertion", async () => {
   - [`calls()`](#calls-readonly-call)
   - [`hasBeenCalledWith()`](#hasbeencalledwithmatcher-boolean)
   - [`hasBeenCalledTimes()`](#hasbeencalledtimestimes-matcher-boolean)
+  - [`countCalls()`](#countcallsmatcher-number)
   - [`reset()`](#reset-void)
   - [`resetMocks()`](#resetmocks-void)
   - [`resetCalls()`](#resetcalls-void)
+- [`ExpectationMessage`](#expectationmessage)
+  - [`hasBeenCalledWith()`](#hasbeencalledwithmockserver-matcher-string)
+  - [`hasBeenCalledTimes()`](#hasbeencalledtimesmockserver-times-matcher-string)
 - [`Options`](#options)
 - [`Request`](#request)
 - [`Matcher`](#matcher)
@@ -575,6 +579,8 @@ If `matcher` is a `string` or `RegExp`, it will be used to match the request pat
 
 Returns `true` if the route has been called `times` times with the given `matcher`, `false` otherwise.
 
+#### Example
+
 ```ts
 mockServer.get("/test", { status: 200 });
 
@@ -585,6 +591,32 @@ await fetch("http://localhost:3000/test");
 
 console.log(mockServer.hasBeenCalledTimes(0, { path: "/test" })); // false
 console.log(mockServer.hasBeenCalledTimes(1, { path: "/test" })); // true
+```
+
+---
+
+### `countCalls(matcher): number`
+
+Count the number of times the server was called with the given `matcher`.
+
+| Param   | Type                                          | Default |
+| ------- | --------------------------------------------- | ------- |
+| matcher | `string` \| `RegExp` \| [`Matcher`](#matcher) | -       |
+
+If `matcher` is a `string` or `RegExp`, it will be used to match the request path.
+
+Returns the number of times the server has been called with the given `matcher`.
+
+#### Example
+
+```ts
+mockServer.get("/test", { status: 200 });
+
+console.log(mockServer.countCalls({ path: "/test" })); // 0
+
+await fetch("http://localhost:3000/test");
+
+console.log(mockServer.countCalls({ path: "/test" })); // 1
 ```
 
 ---
@@ -648,6 +680,49 @@ console.log(mockServer.calls());
 mockServer.resetCalls();
 
 console.log(mockServer.calls()); // []
+```
+
+## `ExpectationMessage`
+
+### `hasBeenCalledWith(mockServer, matcher): string`
+
+Format an expectation message for [`hasBeenCalledWith()`](#hasbeencalledwithmatcher-boolean).
+
+| Param      | Type                        | Default |
+| ---------- | --------------------------- | ------- |
+| mockServer | [`MockServer`](#mockserver) | -       |
+| matcher    | [`Matcher`](#matcher)       | -       |
+
+Returns a string with the formatted expectation message.
+
+#### Example
+
+```ts
+if (!mockServer.hasBeenCalledWith(matcher)) {
+  throw new Error(ExpectationMessage.hasBeenCalledWith(mockServer, matcher));
+}
+```
+
+### `hasBeenCalledTimes(mockServer, times, matcher): string`
+
+Format an expectation message for [`hasBeenCalledTimes()`](#hasbeencalledtimestimes-matcher-boolean).
+
+| Param      | Type                        | Default |
+| ---------- | --------------------------- | ------- |
+| mockServer | [`MockServer`](#mockserver) | -       |
+| times      | number                      | -       |
+| matcher    | [`Matcher`](#matcher)       | -       |
+
+Returns a string with the formatted expectation message.
+
+#### Example
+
+```ts
+if (!mockServer.hasBeenCalledTimes(mockServer, 2, matcher)) {
+  throw new Error(
+    ExpectationMessage.hasBeenCalledTimes(mockServer, 2, matcher),
+  );
+}
 ```
 
 ## `Options`
