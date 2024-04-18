@@ -1,4 +1,5 @@
 import type http from "node:http";
+import { setTimeout } from "node:timers/promises";
 import express from "express";
 import bodyParser from "body-parser";
 import { matchRequest } from "./matchRequest";
@@ -22,6 +23,11 @@ export type ResponseObj = {
    * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj}
    */
   body?: string | object;
+  /**
+   * delay in milliseconds before responding
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responseobj}
+   */
+  delay?: number;
 };
 
 /**
@@ -29,7 +35,7 @@ export type ResponseObj = {
  * @returns {ResponseObj} response the mock server should respond with
  * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#responsefn}
  */
-export type ResponseFn = (req: Request) => ResponseObj;
+export type ResponseFn = (req: Request) => ResponseObj | Promise<ResponseObj>;
 
 /**
  * response the mock server should respond with
@@ -114,50 +120,57 @@ export class MockServer {
     });
 
     // eslint-disable-next-line @typescript-eslint/ban-types
-    this.#app.all<"*", {}, unknown, Buffer | undefined>("*", (req, res) => {
-      const matches = this.#mocks.filter(({ matcher }) =>
-        matchRequest(matcher, req),
-      );
-
-      if (matches.length === 0) {
-        console.warn("Unmatched", req.method, req.path);
-        return res.status(404).end();
-      }
-
-      const match = matches.length === 1 ? matches[0] : matches.at(-1)!;
-
-      this.#calls.push({
-        request: req,
-        matcher: match.matcher,
-      });
-
-      if (matches.length > 1 && !match.options.overwrite) {
-        console.warn("Ambiguous", req.method, req.path);
-        console.warn("use overwrite: true");
-        return res.status(404).end();
-      }
-
-      const response =
-        typeof match.response === "function"
-          ? match.response(req)
-          : match.response;
-
-      res.status(response.status ?? 200);
-
-      if (response.headers) {
-        Object.entries(response.headers).forEach(([k, v]) => res.header(k, v));
-      }
-
-      if (response.body) {
-        res.send(
-          typeof response.body === "string"
-            ? response.body
-            : JSON.stringify(response.body),
+    this.#app.all<"*", {}, unknown, Buffer | undefined>(
+      "*",
+      async (req, res) => {
+        const matches = this.#mocks.filter(({ matcher }) =>
+          matchRequest(matcher, req),
         );
-      }
 
-      res.end();
-    });
+        if (matches.length === 0) {
+          console.warn("Unmatched", req.method, req.path);
+          return res.status(404).end();
+        }
+
+        const match = matches.length === 1 ? matches[0] : matches.at(-1)!;
+
+        this.#calls.push({
+          request: req,
+          matcher: match.matcher,
+        });
+
+        if (matches.length > 1 && !match.options.overwrite) {
+          console.warn("Ambiguous", req.method, req.path);
+          console.warn("use overwrite: true");
+          return res.status(404).end();
+        }
+
+        const response =
+          typeof match.response === "function"
+            ? await match.response(req)
+            : match.response;
+
+        if (response.delay) await setTimeout(response.delay);
+
+        res.status(response.status ?? 200);
+
+        if (response.headers) {
+          Object.entries(response.headers).forEach(([k, v]) =>
+            res.header(k, v),
+          );
+        }
+
+        if (response.body) {
+          res.send(
+            typeof response.body === "string"
+              ? response.body
+              : JSON.stringify(response.body),
+          );
+        }
+
+        res.end();
+      },
+    );
   }
 
   /**

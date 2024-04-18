@@ -167,6 +167,7 @@ describe("MockServer", () => {
       mockServer.get("/test", {
         body: "Hello World",
         headers: { "Content-Type": "text/plain" },
+        delay: 1,
       });
 
       const response = await fetch(`${host}/test`);
