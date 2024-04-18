@@ -786,13 +786,14 @@ Object with the following properties:
 | status   | `number` \| `undefined`                 | status code to respond with (defaults to `200`)                                          |
 | headers  | `Record<string, string>` \| `undefined` | headers to respond with                                                                  |
 | body     | `string` \| `object` \| `undefined`     | body to respond with.<br/>If an `object` is given it will be converted to a JSON string. |
+| delay    | `number` \| `undefined`                 | delay in milliseconds before responding                                                  |
 
 ## `ResponseFn`
 
-Function that takes a [`Request`](#request) and returns a [`ResponseObj`](#responseobj).
+Function or async function that takes a [`Request`](#request) and returns a [`ResponseObj`](#responseobj).
 
 ```ts
-type ResponseFn = (req: Request) => ResponseObj;
+type ResponseFn = (req: Request) => ResponseObj | Promise<ResponseObj>;
 ```
 
 ## `MockOptions`
