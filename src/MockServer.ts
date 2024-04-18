@@ -369,6 +369,20 @@ export class MockServer {
   }
 
   /**
+   * Count the number of times the server was called with the given `matcher`.
+   * @param {string | RegExp | Matcher} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
+   * @returns {number} number of times the server has been called with the given `matcher`
+   * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#countcallsmatcher-number}
+   * @example
+   * mockServer.countCalls({ path: "/test" });
+   */
+  public countCalls(matcher: string | RegExp | Matcher): number {
+    const resolved = this.#resolvePathMatcher(matcher);
+    return this.#calls.filter(({ request }) => matchRequest(resolved, request))
+      .length;
+  }
+
+  /**
    * Check if the route has been called a certain number of times with the given `matcher`.
    * @param {number} times
    * @param {string | RegExp | Matcher} matcher - If matcher is a `string` or `RegExp`, it will be used to match the request path
@@ -381,11 +395,7 @@ export class MockServer {
     times: number,
     matcher: string | RegExp | Matcher,
   ): boolean {
-    const resolved = this.#resolvePathMatcher(matcher);
-    return (
-      this.#calls.filter(({ request }) => matchRequest(resolved, request))
-        .length === times
-    );
+    return this.countCalls(matcher) === times;
   }
 
   /**
