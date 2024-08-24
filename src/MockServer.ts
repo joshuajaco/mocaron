@@ -119,7 +119,7 @@ export class MockServer {
       next();
     });
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     this.#app.all<"*", {}, unknown, Buffer | undefined>(
       "*",
       async (req, res) => {

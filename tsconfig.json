@@ -1,15 +1,18 @@
 {
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "*.mjs"],
   "exclude": ["dist"],
   "compilerOptions": {
     "target": "ESNext",
     "strict": true,
+    "allowJs": true,
+    "checkJs": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "CommonJS",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "incremental": true
+    "incremental": true,
+    "skipLibCheck": true
   }
 }
