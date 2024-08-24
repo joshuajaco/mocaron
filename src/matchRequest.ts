@@ -6,7 +6,7 @@ import type http from "node:http";
  * request the server was called with
  * @see [Documentation]{@link https://github.com/joshuajaco/mocaron#request}
  */
-export type Request = express.Request<{}, unknown, Buffer | undefined>; // eslint-disable-line @typescript-eslint/ban-types
+export type Request = express.Request<{}, unknown, Buffer | undefined>; // eslint-disable-line  @typescript-eslint/no-empty-object-type
 
 /** @see [Documentation]{@link https://github.com/joshuajaco/mocaron#matcherobj} */
 export type MatcherObj = {

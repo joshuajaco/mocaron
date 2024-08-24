@@ -9,17 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js from .tool-versions
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
-          cache: "npm"
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm run build
-      - run: npm run test
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm run typecheck
+      - run: pnpm run format:check
+      - run: pnpm run lint
+      - run: pnpm run build
+      - run: pnpm run test
         env:
           FORCE_COLOR: 2
       - name: Coveralls

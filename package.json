@@ -23,9 +23,9 @@
     "build": "rimraf dist && tsc -p tsconfig.build.json",
     "format": "prettier -w .",
     "format:check": "prettier -c .",
-    "lint": "eslint --ignore-path .gitignore --max-warnings 0 .",
-    "lint:fix": "npm run lint -- --fix",
-    "prepublishOnly": "npm run build",
+    "lint": "eslint --max-warnings 0 .",
+    "lint:fix": "pnpm run lint --fix",
+    "prepublishOnly": "pnpm run build",
     "test": "nyc -r=lcov -r=text node --trace-warnings -r ts-node/register --test \"**/*.test.ts\"",
     "typecheck": "tsc"
   },
@@ -37,17 +37,22 @@
     "jest-diff": "^29.7.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.1.1",
+    "@eslint/js": "^9.9.1",
+    "@types/body-parser": "^1.19.5",
     "@types/deep-equal": "^1.0.4",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
-    "@typescript-eslint/parser": "^7.7.0",
-    "eslint": "^8.57.0",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint__js": "^8.42.3",
+    "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
     "get-port-please": "^3.1.2",
-    "node-mocks-http": "^1.14.1",
-    "nyc": "^15.1.0",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
+    "node-mocks-http": "^1.15.1",
+    "nyc": "^17.0.0",
+    "prettier": "^3.3.3",
+    "rimraf": "^5.0.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
-  }
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.2.0"
+  },
+  "packageManager": "pnpm@9.8.0"
 }
